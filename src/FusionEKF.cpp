@@ -90,18 +90,19 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       // Convert radar from polar to cartesian coordinates and initialize state
-      ekf_.x_ << measurement_pack.raw_measurements_[0] * sin(measurement_pack.raw_measurements_[1]),
-                measurement_pack.raw_measurements_[0] * cos(measurement_pack.raw_measurements_[1]),
-                0,
-                0;
-
+      ekf_.x_ << measurement_pack.raw_measurements_[0] * cos(measurement_pack.raw_measurements_[1]),
+                measurement_pack.raw_measurements_[0] * sin(measurement_pack.raw_measurements_[1]),
+                measurement_pack.raw_measurements_[2] * cos(measurement_pack.raw_measurements_[1]),
+                measurement_pack.raw_measurements_[2] * sin(measurement_pack.raw_measurements_[1]);
+      std::cout << "Initial RADAR " << ekf_.x_ << std::endl;
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
       // Initialize state with the initial location and zero velocity
       ekf_.x_ << measurement_pack.raw_measurements_[0],
                 measurement_pack.raw_measurements_[1],
-                0,
-                0;
+                5.25,
+                0.25;
+      std::cout << "Initial LASER " << ekf_.x_ << std::endl;
     }
 
     previous_timestamp_ = measurement_pack.timestamp_;
@@ -165,5 +166,5 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
   // print the output
   std::cout << "x_ = " << ekf_.x_ << std::endl;
-  std::cout << "P_ = " << ekf_.P_ << std::endl;
+  //std::cout << "P_ = " << ekf_.P_ << std::endl;
 }
